@@ -1,0 +1,26 @@
+tecnica_id;valore
+1;potenziometria
+2;spettrofotometria IR
+3;metodo colturale - conta
+4;MPN
+5;metodo colturale + sieroagglutinazione al lattice
+6;metodo colturale + immunocromatrografia
+7;HPLC-UV-vis
+8;conduttimetria
+9;titrimetria
+10;nefelometria
+11;gravimetria
+12;IC
+13;LC-MS/MS
+14;scintillazione liquida
+15;ICP-MS
+16;HRGC/HRMS
+17;metodo colturale - ricerca
+18;spettrometria gamma
+19;ICP-OES
+20;GC-MS
+21;microscopia elettronica a scansione
+22;GC-FID
+23;spettrofotometria UV-Vis
+24;GC-MS/MS
+25;tritrimetria potenziometrica
