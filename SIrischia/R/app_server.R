@@ -19,4 +19,6 @@ app_server <- function(input, output, session) {
   r_global <- reactiveValues(
     conn = conn           # db connection shared across modules
   )
+
+  mod_insert01_server("methods", r_global)
 }

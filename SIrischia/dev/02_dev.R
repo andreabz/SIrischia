@@ -25,7 +25,7 @@ golem::add_module(name = "view02", with_test = TRUE) # Name of the module
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*
-golem::add_fct("helpers", with_test = TRUE)
+golem::add_fct("sqlquery", with_test = TRUE)
 golem::add_utils("helpers", with_test = TRUE)
 
 ## External resources
@@ -54,7 +54,7 @@ devtools::build_vignettes()
 usethis::use_coverage()
 
 # Create a summary readme for the testthat subdirectory
-covrpage::covrpage()
+#covrpage::covrpage()
 
 ## CI ----
 ## Use this part of the script if you need to set up a CI
@@ -93,4 +93,4 @@ usethis::use_gitlab_ci()
 
 # You're now set! ----
 # go to dev/03_deploy.R
-rstudioapi::navigateToFile("dev/03_deploy.R")
+# rstudioapi::navigateToFile("dev/03_deploy.R")

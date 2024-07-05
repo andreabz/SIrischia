@@ -420,13 +420,13 @@ DBI::dbExecute(conn,
                 );")
 
 DBI::dbExecute(conn,
-               "INSERT INTO perditafiducia (descrizione, valore)
+               "INSERT INTO fattoriaggravanti (descrizione, valore)
                VALUES ('Sì', 10);")
 DBI::dbExecute(conn,
-               "INSERT INTO perditafiducia (descrizione, valore)
+               "INSERT INTO fattoriaggravanti (descrizione, valore)
                VALUES ('Parzialmente', 5);")
 DBI::dbExecute(conn,
-               "INSERT INTO perditafiducia (descrizione, valore)
+               "INSERT INTO fattoriaggravanti (descrizione, valore)
                VALUES ('No', 1);")
 
 # repeatable test
