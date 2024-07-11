@@ -215,7 +215,7 @@ DBI::dbExecute(conn,
 # method type
 DBI::dbExecute(conn,
                "CREATE TABLE metodotipo(
-                  metodo_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  metodotipo_id INTEGER PRIMARY KEY AUTOINCREMENT,
                   descrizione TEXT NOT NULL,
                   valore INTEGER NOT NULL
                 );")
@@ -658,5 +658,15 @@ DBI::dbExecute(conn,
                   provasanzionatoria_id INTEGER REFERENCES provasanzionatoria(provasanzionatoria_id),
                   dannoimmagine_id INTEGER REFERENCES dannoimmagine(dannoimmagine_id),
                   perditafiducia_id INTEGER REFERENCES perditafiducia(perditafiducia_id),
-                  fattoriaggravanti_id INTEGER REFERENCES fattoriaggravanti(fattoriaggravanti_id)
+                  fattoriaggravanti_id INTEGER REFERENCES fattoriaggravanti(fattoriaggravanti_id),
+                  provaripetibile_id INTEGER REFERENCES provaripetibile(provaripetibile_id)
+                );")
+
+# risk table
+DBI::dbExecute(conn,
+               "CREATE TABLE rischio(
+                  rischio_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  rilevabilita_id INTEGER REFERENCES rilevabilita(rilevabilita_id),
+                  probabilita_id INTEGER REFERENCES probabilita(probabilita_id),
+                  gravita_id INTEGER REFERENCES gravita(gravita_id)
                 );")
