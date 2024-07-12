@@ -357,7 +357,7 @@ sql_getmaxyear <- function(conn,
   stopifnot(c(paste0(table, "_id"), "metodo_id") %in% pool::dbListFields(conn, table))
 
 
-  query <- glue::glue_sql("SELECT MAX(valore) AS anno
+  query <- glue::glue_sql("SELECT MAX(anno.valore) AS anno
                             FROM {`table`}
                            JOIN anno
                             ON {`table`}.anno_id = anno.anno_id
@@ -391,13 +391,15 @@ sql_getmean <- function(conn,
   stopifnot(pool::dbExistsTable(conn, table))
 
   col_names <- pool::dbListFields(conn, table)
-  table_names <- col_names |> (\(x) {gsub("_id", "", x)})()
+  excluded_cols <- c(paste0(table, "_id"), "metodo_id", "anno_id")
+  included_cols <- col_names[!{col_names %in% excluded_cols}]
+  table_names <- included_cols |> (\(x) {gsub("_id", "", x)})()
 
   lapply(table_names, function (x) {
     stopifnot(pool::dbExistsTable(conn, x))
   })
 
- query <- lapply(col_names[-c(1:3)], function(x) {
+ query <- lapply(included_cols, function(x) {
     uniontable <-  gsub("_id", "", x)
     table_id <- paste0(table, "_id")
 

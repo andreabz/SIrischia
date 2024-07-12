@@ -618,6 +618,7 @@ DBI::dbExecute(conn,
                "INSERT INTO anno (valore)
                VALUES (2034);")
 
+#### Result tables ----
 # rilevability table
 DBI::dbExecute(conn,
                "CREATE TABLE rilevabilita(

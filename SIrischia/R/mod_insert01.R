@@ -555,12 +555,23 @@ mod_insert01_server <- function(id, r_global){
       #### populating the probability table results ----
       r_local$probability$name <- r_local$probability_cols[-1]
 
-        mycols <- r_local$probability_cols[-c(1:3)]
+        prob_excluded_cols <- c("probabilita_id", "metodo_id", "anno_id")
+        prob_included_cols <- !{r_local$probability_cols %in% prob_excluded_cols}
+        prob_mycols <- r_local$probability_cols[prob_included_cols]
+
+        lapply(prob_mycols, function(x) {
+          mytable <- gsub("_id", "", x)
+          myquestion <- paste0("q_", mytable)
+
+          sql_getcondlist(r_global$conn, mytable, x, "descrizione", input[[myquestion]])
+        })  |>
+          unlist() |>
+          unname() |> print()
 
         r_local$probability$value <- c(
           r_local$method_id,
           r_local$year_id,
-          lapply(mycols, function(x) {
+          lapply(prob_mycols, function(x) {
             mytable <- gsub("_id", "", x)
             myquestion <- paste0("q_", mytable)
 
@@ -573,12 +584,14 @@ mod_insert01_server <- function(id, r_global){
       #### populating the detectability table results ----
       r_local$detectability$name <- r_local$detectability_cols[-1]
 
-        mycols <- r_local$detectability_cols[-c(1:3)]
+        det_excluded_cols <- c("rilevabilita_id", "metodo_id", "anno_id")
+        det_included_cols <- !{r_local$detectability_cols %in% det_excluded_cols}
+        det_mycols <- r_local$detectability_cols[det_included_cols]
 
         r_local$detectability$value <- c(
           r_local$method_id,
           r_local$year_id,
-          lapply(mycols, function(x) {
+          lapply(det_mycols, function(x) {
             mytable <- gsub("_id", "", x)
             myquestion <- paste0("q_", mytable)
 
@@ -591,12 +604,14 @@ mod_insert01_server <- function(id, r_global){
       #### populating the magnitude table results ----
       r_local$magnitude$name <- r_local$magnitude_cols[-1]
 
-        mycols <- r_local$magnitude_cols[-c(1:3)]
+        mag_excluded_cols <- c("gravita_id", "metodo_id", "anno_id")
+        mag_included_cols <- !{r_local$magnitude_cols %in% mag_excluded_cols}
+        mag_mycols <- r_local$magnitude_cols[mag_included_cols]
 
         r_local$magnitude$value <- c(
           r_local$method_id,
           r_local$year_id,
-          lapply(mycols, function(x) {
+          lapply(mag_mycols, function(x) {
             mytable <- gsub("_id", "", x)
             myquestion <- paste0("q_", mytable)
 
@@ -629,7 +644,8 @@ mod_insert01_server <- function(id, r_global){
                      gravita_id = sql_getresid(r_global$conn,
                                                "gravita",
                                                r_local$method_id,
-                                               r_local$year_id))
+                                               r_local$year_id)
+      )
 
       if (!is.null(r_local$new_data) || !is.null(r_local$new_year)) {
         sql_insert(r_global$conn, "rischio", names(risk_data), risk_data |> unname())
@@ -663,25 +679,21 @@ mod_insert01_server <- function(id, r_global){
     output$detectability_result <- renderText({
       req(r_local$detectability_id)
 
-      sql_getmean(conn, "rilevabilita", r_local$detectability_id)
-
+      sql_getmean(r_global$conn, "rilevabilita", r_local$detectability_id)
     })
 
 
     output$probability_result <- renderText({
       req(r_local$probability_id)
 
-      sql_getmean(conn, "probabilita", r_local$probability_id)
-
+      sql_getmean(r_global$conn, "probabilita", r_local$probability_id)
     })
 
 
     output$magnitude_result <- renderText({
       req(r_local$magnitude_id)
 
-      sql_getmean(conn, "gravita", r_local$magnitude_id)
-
-
+      sql_getmean(r_global$conn, "gravita", r_local$magnitude_id)
     })
 
     output$risk_result <- renderText({
@@ -689,12 +701,12 @@ mod_insert01_server <- function(id, r_global){
       req(r_local$probability_id)
       req(r_local$magnitude_id)
 
-      round(
-      sql_getmean(conn, "rilevabilita", r_local$detectability_id) *
-      sql_getmean(conn, "probabilita", r_local$probability_id) *
-      sql_getmean(conn, "gravita", r_local$magnitude_id)
-      , 0)
-
+      {
+        sql_getmean(r_global$conn, "rilevabilita", r_local$detectability_id) *
+        sql_getmean(r_global$conn, "probabilita", r_local$probability_id) *
+        sql_getmean(r_global$conn, "gravita", r_local$magnitude_id)
+      } |>
+        round(0)
     })
 
 
