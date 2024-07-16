@@ -27,5 +27,9 @@
 }
 
 .small-box{
-  border-radius: 15px
+  border-radius: 15px;
+}
+
+#DataTables_Table_0_wrapper {
+  padding-top: 20px;
 }
