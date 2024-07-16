@@ -7,12 +7,18 @@ Authors@R:
            role = c("aut", "cre"),
            email = "your@email.com")
 Description: What the package does (one paragraph).
-License: What license is it under?
+License: AGPL (>= 3) + file LICENSE
 Imports: 
+    bslib,
     config (>= 0.3.2),
     data.table,
+    DT,
+    glue,
     golem (>= 0.4.1),
-    shiny (>= 1.8.1.1)
+    pool,
+    RSQLite,
+    shiny (>= 1.8.1.1),
+    shinyjs
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.2

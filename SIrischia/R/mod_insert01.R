@@ -7,7 +7,8 @@
 #' @noRd
 #'
 #' @import shiny
-#' @importFrom bslib navset_tab nav_panel
+#' @importFrom bslib navset_tab nav_panel layout_column_wrap card card_body card_header input_task_button
+#' @importFrom shinyjs hidden
 mod_insert01_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -83,23 +84,23 @@ mod_insert01_ui <- function(id) {
         bslib::card_body(
           id = ns("rilevability"),
 
-          shiny::h5("Rilevabilità"),
+          shiny::h5("Rilevabilit\u00E0"),
 
           shiny::selectInput(
             inputId = ns("q_partecipazionept"),
-            label = "Con che frequenza partecipi a proficency test?",
+            label = "A quanti proficency test partecipi?",
             choices = NULL
           ),
 
           shiny::selectInput(
             inputId = ns("q_giustezza"),
-            label = "Con che frequenza esegui una prova di giustezza?",
+            label = "Con che frequenza esegui prove di giustezza?",
             choices = NULL
           ),
 
           shiny::selectInput(
             inputId = ns("q_ripetibilita"),
-            label = "Con che frequenza esegui una prova di ripetibilità?",
+            label = "Con che frequenza esegui prove di ripetibilit\u00E0?",
             choices = NULL
           ),
 
@@ -111,7 +112,7 @@ mod_insert01_ui <- function(id) {
 
           shiny::selectInput(
             inputId = ns("q_selettivita"),
-            label = "Con che frequenza verifichi la selettività?",
+            label = "Con che frequenza verifichi la selettivit\u00E0?",
             choices = NULL
           ),
 
@@ -132,7 +133,7 @@ mod_insert01_ui <- function(id) {
         bslib::card_body(
           id = ns("probability"),
 
-          shiny::h5("Probabilità"),
+          shiny::h5("Probabilit\u00E0"),
 
           shiny::selectInput(
             inputId = ns("q_personale"),
@@ -142,7 +143,7 @@ mod_insert01_ui <- function(id) {
 
           shiny::selectInput(
             inputId = ns("q_metodotipo"),
-            label = "Qual è la tipologia di metodo?",
+            label = "A quale tipologia \u00E8 appartiene il metodo?",
             choices = NULL
           ),
 
@@ -154,19 +155,19 @@ mod_insert01_ui <- function(id) {
 
           shiny::selectInput(
             inputId = ns("q_risultatopt"),
-            label = "Quanti proficency test hanno avuto esito non conforme negli ultimi quattro anni?",
+            label = "Quanto tempo è passato dall'ultimo proficency non conforme?",
             choices = NULL
           ),
 
           shiny::selectInput(
             inputId = ns("q_campionianno"),
-            label = "Quanti campioni sono analizzati all'anno?",
+            label = "Quanti campioni sono stati analizzati nell'anno di interesse?",
             choices = NULL
           ),
 
           shiny::selectInput(
             inputId = ns("q_metodoaccreditato"),
-            label = "La prova è accreditata?",
+            label = "La prova \u00E8 accreditata?",
             choices = NULL
           ),
 
@@ -178,7 +179,7 @@ mod_insert01_ui <- function(id) {
 
           shiny::selectInput(
             inputId = ns("q_esperienzametodo"),
-            label = "Da quanto il metodo è in utilizzo?",
+            label = "Da quanti anni il metodo \u00E8 in utilizzo?",
             choices = NULL
           )
 
@@ -187,23 +188,23 @@ mod_insert01_ui <- function(id) {
         bslib::card_body(
           id = ns("magnitude"),
 
-          shiny::h5("Gravità"),
+          shiny::h5("Gravit\u00E0"),
 
           shiny::selectInput(
             inputId = ns("q_provasanzionatoria"),
-            label = "La prova è sanzionatoria?",
+            label = "La prova \u00E8 sanzionatoria?",
             choices = NULL
           ),
 
           shiny::selectInput(
             inputId = ns("q_dannoimmagine"),
-            label = "In caso di misura errata, come sarà il danno di immagine per il laboratorio?",
+            label = "In caso di misura errata, come sar\u00E0 il danno di immagine per il laboratorio?",
             choices = NULL
           ),
 
           shiny::selectInput(
             inputId = ns("q_perditafiducia"),
-            label = "In caso di misura errata, come sarà la perdita di fiducia del cliente?",
+            label = "In caso di misura errata, come sar\u00E0 la perdita di fiducia del cliente?",
             choices = NULL
           ),
 
@@ -215,7 +216,7 @@ mod_insert01_ui <- function(id) {
 
           shiny::selectInput(
             inputId = ns("q_provaripetibile"),
-            label = "La prova può essere ripetuta?",
+            label = "La prova pu\u00F2 essere ripetuta?",
             choices = NULL
           )
 
@@ -232,13 +233,13 @@ mod_insert01_ui <- function(id) {
             id = ns("result"),
             div(style = "margin-top: 15px", shiny::h5("Risultato")),
             tags$ul(
-              tags$li("Rilevabilità: ", htmlOutput(ns(
+              tags$li("Rilevabilit\u00E0: ", htmlOutput(ns(
                 "detectability_result"
               ))),
-              tags$li("Probabilità: ", htmlOutput(ns(
+              tags$li("Probabilit\u00E0: ", htmlOutput(ns(
                 "probability_result"
               ))),
-              tags$li("Gravità: ", htmlOutput(ns("magnitude_result")))
+              tags$li("Gravit\u00E0: ", htmlOutput(ns("magnitude_result")))
             ),
             tags$div("Rischio: ", htmlOutput(ns("risk_result")))
           )
@@ -253,6 +254,9 @@ mod_insert01_ui <- function(id) {
 #' insert01 Server Functions
 #'
 #' @noRd
+#' @importFrom glue glue glue_sql
+#' @importFrom pool dbListFields dbGetQuery
+#' @importFrom shinyjs show hide
 mod_insert01_server <- function(id, r_global) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -723,7 +727,7 @@ mod_insert01_server <- function(id, r_global) {
         ", in uso presso il settore {r_local$area}",
         " nell'anno {r_local$year}.</br>
 
-        Il rischio è <span class='risk risk_{r_local$risk_color}'>{r_local$risk_value}</span>"
+        Il rischio \u00E8 <span class='risk risk_{r_local$risk_color}'>{r_local$risk_value}</span>"
       )
 
       shinyjs::hide("risk")

@@ -7,13 +7,14 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-#' @importFrom DT render
+#' @importFrom DT DTOutput
 #' @importFrom bslib layout_column_wrap value_box value_box_theme
 mod_view02_ui <- function(id) {
   ns <- NS(id)
   tagList(
     bslib::layout_column_wrap(
       width = 1 / 4,
+      fill = FALSE,
 
       div(
         class = "d-inline-flex input-group align-items-center gap-2 mx-3",
@@ -79,6 +80,8 @@ mod_view02_ui <- function(id) {
 #'
 #' @noRd
 #' @import data.table
+#' @importFrom DT renderDT
+#' @importFrom glue glue
 mod_view02_server <- function(id, r_global) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns

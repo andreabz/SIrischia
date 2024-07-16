@@ -9,7 +9,7 @@
 app_server <- function(input, output, session) {
   conn <- pool::dbPool(
     drv = RSQLite::SQLite(),
-    dbname = "./data/SIrischia.db",
+    dbname = "./inst/extdata/SIrischia.db",
     extended_types = TRUE
   )
   shiny::onStop(function() {

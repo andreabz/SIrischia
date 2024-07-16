@@ -180,20 +180,7 @@ sql_getmethid <- function(conn,
 #' @return no output
 #'
 #' @noRd
-#' @importFrom DBI dbGetQuery dbExecute
-#' @importFrom glue glue_sql glue_sql_collapse
-#' SQL code for adding new data
-#'
-#' @description The function add new data to a database using SQL code.
-#' @param conn connection object.
-#' @param tbl the name of the table in which new data is to be added.
-#' @param cols the name of the fields for which new data has been provided.
-#' @param vals the new values to be added to the dataset.
-#'
-#' @return no output
-#'
-#' @noRd
-#' @importFrom DBI dbGetQuery dbExecute
+#' @importFrom pool dbGetQuery dbExecute
 #' @importFrom glue glue_sql glue_sql_collapse
 sql_insert <- function(conn, tbl, cols, vals){
 
@@ -233,7 +220,7 @@ sql_insert <- function(conn, tbl, cols, vals){
 #' @return no output
 #'
 #' @noRd
-#' @importFrom DBI dbGetQuery dbExecute
+#' @importFrom pool dbGetQuery dbExecute
 #' @importFrom glue glue_sql glue_sql_collapse
 sql_update <- function(conn, tbl, cols, vals, condcol, condval){
 
@@ -345,7 +332,7 @@ sql_getriskid <- function(conn,
 #' @return an integer
 #'
 #' @noRd
-#' @importFrom pool dbGetQuery db
+#' @importFrom pool dbGetQuery dbExistsTable dbListFields
 #' @importFrom glue glue_sql
 sql_getmaxyear <- function(conn,
                            table,
@@ -382,7 +369,7 @@ sql_getmaxyear <- function(conn,
 #' @return an integer
 #'
 #' @noRd
-#' @importFrom pool dbGetQuery db
+#' @importFrom pool dbGetQuery dbExistsTable dbListFields
 #' @importFrom glue glue_sql
 sql_getmean <- function(conn,
                         table,
@@ -431,7 +418,7 @@ sql_getmean <- function(conn,
 #' @return a data.table.
 #'
 #' @noRd
-#' @importFrom pool dbGetQuery db
+#' @importFrom pool dbGetQuery dbExistsTable
 #' @importFrom glue glue_sql
 #' @import data.table
 sql_getrisktable <- function(conn,
@@ -485,7 +472,7 @@ sql_getrisktable <- function(conn,
 #' @return an integer
 #'
 #' @noRd
-#' @importFrom pool dbGetQuery db
+#' @importFrom pool dbGetQuery dbExistsTable
 #' @importFrom glue glue_sql
 sql_countrisk <- function(conn,
                           level,

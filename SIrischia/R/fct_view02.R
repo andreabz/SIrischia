@@ -15,6 +15,13 @@
 format_risk <- function(conn, area) {
   stopifnot(is.character(area))
 
+  formatted_risk <- NULL
+  settore <- NULL
+  metodo <- NULL
+  tecnica <- NULL
+  anno <- NULL
+  . <- NULL
+
   risk_dt <- sql_getrisktable(conn, area) |> data.table::data.table()
   risk_dt[, formatted_risk := glue::glue("<span class='risk risk_{risk_dt$colore}'>{risk_dt$rischio}</span>")][,
     .(settore, metodo, tecnica, anno, formatted_risk)] |>
