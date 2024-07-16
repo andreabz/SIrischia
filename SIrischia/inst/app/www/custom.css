@@ -1,0 +1,31 @@
+ .risk {
+  min-width: 50px;
+  border: none;
+  color: white;
+  padding: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 2px 2px;
+  border-radius: 8px;
+}
+
+.risk_verde {
+  background-color: #04AA6D; /* Green */
+  color: white;
+}
+
+.risk_giallo {
+  background-color: #FFC300; /* Yellow */
+  color: black;
+}
+
+.risk_rosso {
+  background-color: #C70039; /* Yellow */
+  color: white;
+}
+
+.small-box{
+  border-radius: 15px
+}

@@ -21,4 +21,5 @@ app_server <- function(input, output, session) {
   )
 
   mod_insert01_server("methods", r_global)
+  mod_view02_server("risk", r_global)
 }

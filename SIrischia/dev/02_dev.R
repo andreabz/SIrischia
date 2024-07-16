@@ -27,6 +27,7 @@ golem::add_module(name = "view02", with_test = TRUE) # Name of the module
 ## Creates fct_* and utils_*
 golem::add_fct("sqlquery", with_test = TRUE)
 golem::add_fct("insert01", with_test = TRUE)
+golem::add_fct("view02", with_test = TRUE)
 golem::add_utils("helpers", with_test = TRUE)
 
 ## External resources

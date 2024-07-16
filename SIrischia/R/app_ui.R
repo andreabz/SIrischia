@@ -29,7 +29,7 @@ app_ui <- function(request) {
                        mod_insert01_ui("methods")),
       bslib::nav_panel("Riepilogo",
                        value = "summary",
-                       mod_view02_ui("repdata")),
+                       mod_view02_ui("risk")),
       bslib::nav_spacer(),
       bslib::nav_menu("Leggimi",
                       align = "right",

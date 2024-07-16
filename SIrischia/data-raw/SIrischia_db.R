@@ -631,7 +631,8 @@ DBI::dbExecute(conn,
                   cartacontrollo_id INTEGER REFERENCES cartacontrollo(cartacontrollo_id),
                   selettivita_id INTEGER REFERENCES selettivita(selettivita_id),
                   contaminazione_id INTEGER REFERENCES contaminazione(contaminazione_id),
-                  taratura_id INTEGER REFERENCES taratura(taratura_id)
+                  taratura_id INTEGER REFERENCES taratura(taratura_id),
+                  valore REAL NOT NULL
                 );")
 
 # probability table
@@ -647,7 +648,8 @@ DBI::dbExecute(conn,
                   campionianno_id INTEGER REFERENCES campionianno(campionianno_id),
                   metodoaccreditato_id INTEGER REFERENCES metodoaccreditato(metodoaccreditato_id),
                   erroririsultato_id INTEGER REFERENCES erroririsultato(erroririsultato_id),
-                  esperienzametodo_id INTEGER REFERENCES esperienzametodo(esperienzametodo_id)
+                  esperienzametodo_id INTEGER REFERENCES esperienzametodo(esperienzametodo_id),
+                  valore REAL NOT NULL
                 );")
 
 # magnitude table
@@ -660,7 +662,8 @@ DBI::dbExecute(conn,
                   dannoimmagine_id INTEGER REFERENCES dannoimmagine(dannoimmagine_id),
                   perditafiducia_id INTEGER REFERENCES perditafiducia(perditafiducia_id),
                   fattoriaggravanti_id INTEGER REFERENCES fattoriaggravanti(fattoriaggravanti_id),
-                  provaripetibile_id INTEGER REFERENCES provaripetibile(provaripetibile_id)
+                  provaripetibile_id INTEGER REFERENCES provaripetibile(provaripetibile_id),
+                  valore REAL NOT NULL
                 );")
 
 # risk table
@@ -669,5 +672,7 @@ DBI::dbExecute(conn,
                   rischio_id INTEGER PRIMARY KEY AUTOINCREMENT,
                   rilevabilita_id INTEGER REFERENCES rilevabilita(rilevabilita_id),
                   probabilita_id INTEGER REFERENCES probabilita(probabilita_id),
-                  gravita_id INTEGER REFERENCES gravita(gravita_id)
+                  gravita_id INTEGER REFERENCES gravita(gravita_id),
+                  valore INTEGER NOT NULL,
+                  colore text NOT NULL
                 );")

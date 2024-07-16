@@ -253,49 +253,43 @@ mod_insert01_ui <- function(id) {
 #' insert01 Server Functions
 #'
 #' @noRd
-mod_insert01_server <- function(id, r_global){
-  moduleServer( id, function(input, output, session){
+mod_insert01_server <- function(id, r_global) {
+  moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    r_local <- reactiveValues(area_id = NULL,
-                              area = NULL,
-                              method_id = NULL,
-                              method = NULL,
-                              technique_id = NULL,
-                              technique = NULL,
-                              year_id = NULL,
-                              year = NULL,
-                              oldyear_id = NULL,
-                              oldyear = NULL,
-                              questions = NULL,
-                              probability = data.frame(
-                                name = rep(NA, 10),
-                                value = rep(NA, 10)
-                              ),
-                              probability_id = NULL,
-                              probability_cols = NULL,
-                              magnitude = data.frame(
-                                name = rep(NA, 7),
-                                value = rep(NA, 7)
-                              ),
-                              magnitude_id = NULL,
-                              magnitude_cols = NULL,
-                              detectability = data.frame(
-                                name = rep(NA, 9),
-                                value = rep(NA, 9)
-                              ),
-                              detectability_id = NULL,
-                              detectability_cols = NULL,
-                              risk_id = NULL,
-                              new_data = NULL,
-                              new_year = NULL,
-                              title = NULL,
-                              missing = NULL,
-                              done = NULL)
+    r_local <- reactiveValues(
+      area_id = NULL,
+      area = NULL,
+      method_id = NULL,
+      method = NULL,
+      technique_id = NULL,
+      technique = NULL,
+      year_id = NULL,
+      year = NULL,
+      oldyear_id = NULL,
+      oldyear = NULL,
+      questions = NULL,
+      probability = data.frame(name = rep(NA, 11), value = rep(NA, 11)),
+      probability_id = NULL,
+      probability_cols = NULL,
+      magnitude = data.frame(name = rep(NA, 8), value = rep(NA, 8)),
+      magnitude_id = NULL,
+      magnitude_cols = NULL,
+      detectability = data.frame(name = rep(NA, 10), value = rep(NA, 10)),
+      detectability_id = NULL,
+      detectability_cols = NULL,
+      risk_id = NULL,
+      risk_value = NULL,
+      risk_color = NULL,
+      new_data = NULL,
+      new_year = NULL,
+      title = NULL,
+      missing = NULL,
+      done = NULL
+    )
 
     #### initialise selectinput choices ----
     observeEvent(r_global$conn, {
-
       # initialise the area selectinput
       updateSelectInput(
         session,
@@ -303,9 +297,11 @@ mod_insert01_server <- function(id, r_global){
         choices = sql_getlist(r_global$conn, "settore", "valore")
       )
       # initialise the year selectinput
-      updateSelectInput(session,
-                        inputId = "year",
-                        choices = sql_getlist(r_global$conn, "anno", "valore"))
+      updateSelectInput(
+        session,
+        inputId = "year",
+        choices = sql_getlist(r_global$conn, "anno", "valore")
+      )
 
       # save the question ids
       r_local$questions <- names(input)[grepl("q_", names(input))] |>
@@ -331,7 +327,11 @@ mod_insert01_server <- function(id, r_global){
     #### update the methods list based on lab site ----
     observeEvent(input$area, {
       r_local$area <- input$area
-      r_local$area_id <- sql_getcondlist(r_global$conn, "settore", "settore_id", "valore", input$area)
+      r_local$area_id <- sql_getcondlist(r_global$conn,
+                                         "settore",
+                                         "settore_id",
+                                         "valore",
+                                         input$area)
 
       methods_area <- sql_getmethsforarea(r_global$conn, input$area)
 
@@ -343,7 +343,11 @@ mod_insert01_server <- function(id, r_global){
     #### update the technique list based on lab site and method ----
     observeEvent(input$method, {
       r_local$method <- input$method
-      r_local$method_id <- sql_getcondlist(r_global$conn, "metodo", "metodo_id", "metodo", input$method)
+      r_local$method_id <- sql_getcondlist(r_global$conn,
+                                           "metodo",
+                                           "metodo_id",
+                                           "metodo",
+                                           input$method)
 
       tech_method <- sql_gettechsformethod(r_global$conn, input$method)
 
@@ -354,7 +358,11 @@ mod_insert01_server <- function(id, r_global){
     #### save choices and check if a record already exists ----
     observeEvent(input$filter, {
       r_local$technique <- input$tech
-      r_local$technique_id <- sql_getcondlist(r_global$conn, "tecnica", "tecnica_id", "valore", input$tech)
+      r_local$technique_id <- sql_getcondlist(r_global$conn,
+                                              "tecnica",
+                                              "tecnica_id",
+                                              "valore",
+                                              input$tech)
       r_local$year <- input$year
       r_local$year_id <- sql_getcondlist(r_global$conn, "anno", "anno_id", "valore", input$year)
 
@@ -455,37 +463,35 @@ mod_insert01_server <- function(id, r_global){
       shinyjs::hide("result")
 
       #### init the menus for new risk assessment ----
-      if(!is.null(r_local$new_data)) {
-
+      if (!is.null(r_local$new_data)) {
         lapply(r_local$questions, function(x) {
           mychoices <- sql_getlist(r_global$conn, x, "descrizione")
           myid <- paste0("q_", x)
           updateSelectInput(session, inputId = myid, choices = mychoices)
         })
 
-      #### restore answers for last recorded year
+        #### restore answers for last recorded year
       } else if (!is.null(r_local$new_year)) {
-
         oldprobability_id  <- sql_getresid(r_global$conn,
-                                                "probabilita",
-                                                r_local$method_id,
-                                                r_local$oldyear_id)
+                                           "probabilita",
+                                           r_local$method_id,
+                                           r_local$oldyear_id)
 
         oldmagnitude_id  <- sql_getresid(r_global$conn,
-                                              "gravita",
-                                              r_local$method_id,
-                                              r_local$oldyear_id)
+                                         "gravita",
+                                         r_local$method_id,
+                                         r_local$oldyear_id)
 
         olddetectability_id  <- sql_getresid(r_global$conn,
-                                                  "rilevabilita",
-                                                  r_local$method_id,
-                                                  r_local$oldyear_id)
+                                             "rilevabilita",
+                                             r_local$method_id,
+                                             r_local$oldyear_id)
 
         lapply(r_local$questions, function(x) {
           mychoices <- sql_getlist(r_global$conn, x, "descrizione")
           myid <- paste0("q_", x)
           mycol <- paste0(x, "_id")
-          myval <- if(mycol %in% r_local$detectability_cols) {
+          myval <- if (mycol %in% r_local$detectability_cols) {
             c(table = "rilevabilita",
               table_id = "rilevabilita_id",
               id = olddetectability_id)
@@ -499,15 +505,21 @@ mod_insert01_server <- function(id, r_global){
               id = oldmagnitude_id)
           }
 
-          myquery <- glue::glue_sql(.con = r_global$conn,
-                                    "SELECT descrizione
-                                      FROM {`myval['table']`}
-                                      INNER JOIN {`x`} ON {`myval['table']`}.{`mycol`} = {`x`}.{`mycol`}
-                                     WHERE {`myval['table_id']`} = {as.numeric(myval['id'])};")
+          myquery <- glue::glue_sql(
+            .con = r_global$conn,
+            "SELECT descrizione
+             FROM {`myval['table']`}
+             INNER JOIN {`x`} ON {`myval['table']`}.{`mycol`} = {`x`}.{`mycol`}
+             WHERE {`myval['table_id']`} = {as.numeric(myval['id'])};"
+          )
 
           myselected <- pool::dbGetQuery(r_global$conn, myquery) |> unlist() |> unname()
-          updateSelectInput(session, inputId = myid, choices = mychoices,
-                            selected = myselected)
+          updateSelectInput(
+            session,
+            inputId = myid,
+            choices = mychoices,
+            selected = myselected
+          )
         })
 
       }
@@ -519,152 +531,205 @@ mod_insert01_server <- function(id, r_global){
       shinyjs::show("result")
 
       # if data were saved restored them and load the menus
-        lapply(r_local$questions, function(x) {
-          mychoices <- sql_getlist(r_global$conn, x, "descrizione")
-          myid <- paste0("q_", x)
-          mycol <- paste0(x, "_id")
-          myval <- if(mycol %in% r_local$detectability_cols) {
-            c(table = "rilevabilita",
-              table_id = "rilevabilita_id",
-              id = r_local$detectability_id)
-          } else if (mycol %in% r_local$probability_cols) {
-            c(table = "probabilita",
-              table_id = "probabilita_id",
-              id = r_local$probability_id)
-          } else if (mycol %in% r_local$magnitude_cols) {
-            c(table = "gravita",
-              table_id = "gravita_id",
-              id = r_local$magnitude_id)
-          }
+      lapply(r_local$questions, function(x) {
+        mychoices <- sql_getlist(r_global$conn, x, "descrizione")
+        myid <- paste0("q_", x)
+        mycol <- paste0(x, "_id")
+        myval <- if (mycol %in% r_local$detectability_cols) {
+          c(
+            table = "rilevabilita",
+            table_id = "rilevabilita_id",
+            id = r_local$detectability_id
+          )
+        } else if (mycol %in% r_local$probability_cols) {
+          c(
+            table = "probabilita",
+            table_id = "probabilita_id",
+            id = r_local$probability_id
+          )
+        } else if (mycol %in% r_local$magnitude_cols) {
+          c(
+            table = "gravita",
+            table_id = "gravita_id",
+            id = r_local$magnitude_id
+          )
+        }
 
-          myquery <- glue::glue_sql(.con = r_global$conn,
-                                    "SELECT descrizione
-                                      FROM {`myval['table']`}
-                                      INNER JOIN {`x`} ON {`myval['table']`}.{`mycol`} = {`x`}.{`mycol`}
-                                     WHERE {`myval['table_id']`} = {as.numeric(myval['id'])};")
+        myquery <- glue::glue_sql(
+          .con = r_global$conn,
+          "SELECT descrizione
+           FROM {`myval['table']`}
+           INNER JOIN {`x`} ON {`myval['table']`}.{`mycol`} = {`x`}.{`mycol`}
+           WHERE {`myval['table_id']`} = {as.numeric(myval['id'])};"
+        )
 
-          myselected <- pool::dbGetQuery(r_global$conn, myquery) |> unlist() |> unname()
-          updateSelectInput(session, inputId = myid, choices = mychoices,
-                            selected = myselected)
-        })
+        myselected <- pool::dbGetQuery(r_global$conn, myquery) |> unlist() |> unname()
+        updateSelectInput(
+          session,
+          inputId = myid,
+          choices = mychoices,
+          selected = myselected
+        )
+      })
 
+      # get the risk value
+      r_local$risk_value <- sql_getcondlist(r_global$conn,
+                                            "rischio",
+                                            "valore",
+                                            "rischio_id",
+                                            r_local$risk_id)
+      r_local$risk_color <- sql_getcondlist(r_global$conn,
+                                            "rischio",
+                                            "colore",
+                                            "rischio_id",
+                                            r_local$risk_id)
     })
 
     observeEvent(input$save, {
-
       #### populating the probability table results ----
-      r_local$probability$name <- r_local$probability_cols[-1]
-
-        prob_excluded_cols <- c("probabilita_id", "metodo_id", "anno_id")
-        prob_included_cols <- !{r_local$probability_cols %in% prob_excluded_cols}
-        prob_mycols <- r_local$probability_cols[prob_included_cols]
-
-        lapply(prob_mycols, function(x) {
-          mytable <- gsub("_id", "", x)
-          myquestion <- paste0("q_", mytable)
-
-          sql_getcondlist(r_global$conn, mytable, x, "descrizione", input[[myquestion]])
-        })  |>
-          unlist() |>
-          unname() |> print()
-
-        r_local$probability$value <- c(
-          r_local$method_id,
-          r_local$year_id,
-          lapply(prob_mycols, function(x) {
-            mytable <- gsub("_id", "", x)
-            myquestion <- paste0("q_", mytable)
-
-            sql_getcondlist(r_global$conn, mytable, x, "descrizione", input[[myquestion]])
-          })  |>
-            unlist() |>
-            unname()
-        )
+      r_local$probability <- prepare_results(r_global$conn,
+                                             "probabilita",
+                                             r_local$method_id,
+                                             r_local$year_id,
+                                             input)
 
       #### populating the detectability table results ----
-      r_local$detectability$name <- r_local$detectability_cols[-1]
-
-        det_excluded_cols <- c("rilevabilita_id", "metodo_id", "anno_id")
-        det_included_cols <- !{r_local$detectability_cols %in% det_excluded_cols}
-        det_mycols <- r_local$detectability_cols[det_included_cols]
-
-        r_local$detectability$value <- c(
-          r_local$method_id,
-          r_local$year_id,
-          lapply(det_mycols, function(x) {
-            mytable <- gsub("_id", "", x)
-            myquestion <- paste0("q_", mytable)
-
-            sql_getcondlist(r_global$conn, mytable, x, "descrizione", input[[myquestion]])
-          }) |>
-            unlist() |>
-            unname()
-        )
+      r_local$detectability <- prepare_results(r_global$conn,
+                                               "rilevabilita",
+                                               r_local$method_id,
+                                               r_local$year_id,
+                                               input)
 
       #### populating the magnitude table results ----
-      r_local$magnitude$name <- r_local$magnitude_cols[-1]
+      r_local$magnitude <- prepare_results(r_global$conn,
+                                           "gravita",
+                                           r_local$method_id,
+                                           r_local$year_id,
+                                           input)
 
-        mag_excluded_cols <- c("gravita_id", "metodo_id", "anno_id")
-        mag_included_cols <- !{r_local$magnitude_cols %in% mag_excluded_cols}
-        mag_mycols <- r_local$magnitude_cols[mag_included_cols]
-
-        r_local$magnitude$value <- c(
-          r_local$method_id,
-          r_local$year_id,
-          lapply(mag_mycols, function(x) {
-            mytable <- gsub("_id", "", x)
-            myquestion <- paste0("q_", mytable)
-
-            sql_getcondlist(r_global$conn, mytable, x, "descrizione", input[[myquestion]])
-          }) |>
-            unlist() |>
-            unname()
+      if (!is.null(r_local$new_data) ||
+          !is.null(r_local$new_year)) {
+        sql_insert(
+          r_global$conn,
+          "probabilita",
+          r_local$probability$name,
+          r_local$probability$value
         )
-
-      if (!is.null(r_local$new_data) || !is.null(r_local$new_year)) {
-        sql_insert(r_global$conn, "probabilita", r_local$probability$name, r_local$probability$value)
-        sql_insert(r_global$conn, "rilevabilita", r_local$detectability$name, r_local$detectability$value)
-        sql_insert(r_global$conn, "gravita", r_local$magnitude$name, r_local$magnitude$value)
+        sql_insert(
+          r_global$conn,
+          "rilevabilita",
+          r_local$detectability$name,
+          r_local$detectability$value
+        )
+        sql_insert(
+          r_global$conn,
+          "gravita",
+          r_local$magnitude$name,
+          r_local$magnitude$value
+        )
         verb <- "inseriti"
       } else {
-        sql_update(r_global$conn, "probabilita", r_local$probability$name, r_local$probability$value, "probabilita_id", r_local$probability_id)
-        sql_update(r_global$conn, "rilevabilita", r_local$detectability$name, r_local$detectability$value, "rilevabilita_id", r_local$detectability_id)
-        sql_update(r_global$conn, "gravita", r_local$magnitude$name, r_local$magnitude$value, "gravita_id", r_local$magnitude_id)
+        sql_update(
+          r_global$conn,
+          "probabilita",
+          r_local$probability$name,
+          r_local$probability$value,
+          "probabilita_id",
+          r_local$probability_id
+        )
+        sql_update(
+          r_global$conn,
+          "rilevabilita",
+          r_local$detectability$name,
+          r_local$detectability$value,
+          "rilevabilita_id",
+          r_local$detectability_id
+        )
+        sql_update(
+          r_global$conn,
+          "gravita",
+          r_local$magnitude$name,
+          r_local$magnitude$value,
+          "gravita_id",
+          r_local$magnitude_id
+        )
         verb <- "modificati"
       }
 
-      risk_data <- c(rilevabilita_id = sql_getresid(r_global$conn,
-                                                    "rilevabilita",
-                                                    r_local$method_id ,
-                                                    r_local$year_id),
-                     probabilita_id = sql_getresid(r_global$conn,
-                                                   "probabilita",
-                                                   r_local$method_id,
-                                                   r_local$year_id),
-                     gravita_id = sql_getresid(r_global$conn,
-                                               "gravita",
-                                               r_local$method_id,
-                                               r_local$year_id)
+      # risk calculation
+      r_local$risk_value <- {
+        r_local$detectability[r_local$detectability$name == "valore", "value"] *
+          r_local$probability[r_local$probability$name == "valore", "value"] *
+          r_local$magnitude[r_local$magnitude$name == "valore", "value"]
+      } |>
+        round(0)
+      r_local$risk_color <- if (r_local$risk_value >= 1 &
+                                r_local$risk_value <= 50) {
+        "verde"
+      } else if (r_local$risk_value > 50 &
+                 r_local$risk_value <= 100) {
+        "giallo"
+      } else if (r_local$risk_value > 100 &
+                 r_local$risk_value <= 1000) {
+        "rosso"
+      }
+
+
+      risk_data <- c(
+        rilevabilita_id = sql_getresid(
+          r_global$conn,
+          "rilevabilita",
+          r_local$method_id ,
+          r_local$year_id
+        ),
+        probabilita_id = sql_getresid(
+          r_global$conn,
+          "probabilita",
+          r_local$method_id,
+          r_local$year_id
+        ),
+        gravita_id = sql_getresid(
+          r_global$conn,
+          "gravita",
+          r_local$method_id,
+          r_local$year_id
+        ),
+        valore = r_local$risk_value,
+        colore = r_local$risk_color
       )
 
-      if (!is.null(r_local$new_data) || !is.null(r_local$new_year)) {
-        sql_insert(r_global$conn, "rischio", names(risk_data), risk_data |> unname())
+      if (!is.null(r_local$new_data) ||
+          !is.null(r_local$new_year)) {
+        sql_insert(
+          r_global$conn,
+          "rischio",
+          names(risk_data),
+          risk_data |> unname()
+        )
       } else {
-        sql_update(r_global$conn, "rischio", names(risk_data), risk_data |> unname(), "rischio_id", r_local$risk_id)
+        sql_update(
+          r_global$conn,
+          "rischio",
+          names(risk_data),
+          risk_data |> unname(),
+          "rischio_id",
+          r_local$risk_id
+        )
       }
 
       r_local$done <- glue::glue(
         "Risultati {verb} per il metodo {r_local$method}",
         " basato su {r_local$technique}",
         ", in uso presso il settore {r_local$area}",
-        " nell'anno {r_local$year}"
+        " nell'anno {r_local$year}.</br>
+
+        Il rischio è <span class='risk risk_{r_local$risk_color}'>{r_local$risk_value}</span>"
       )
 
       shinyjs::hide("risk")
       shinyjs::show("done")
 
     })
-
 
     #### title of the questionnaire card ----
     output$title <- renderText(r_local$title)
@@ -679,21 +744,39 @@ mod_insert01_server <- function(id, r_global){
     output$detectability_result <- renderText({
       req(r_local$detectability_id)
 
-      sql_getmean(r_global$conn, "rilevabilita", r_local$detectability_id)
+      sql_getcondlist(
+        r_global$conn,
+        "rilevabilita",
+        "valore",
+        "rilevabilita_id",
+        r_local$detectability_id
+      )
     })
 
 
     output$probability_result <- renderText({
       req(r_local$probability_id)
 
-      sql_getmean(r_global$conn, "probabilita", r_local$probability_id)
+      sql_getcondlist(
+        r_global$conn,
+        "probabilita",
+        "valore",
+        "probabilita_id",
+        r_local$probability_id
+      )
     })
 
 
     output$magnitude_result <- renderText({
       req(r_local$magnitude_id)
 
-      sql_getmean(r_global$conn, "gravita", r_local$magnitude_id)
+      sql_getcondlist(
+        r_global$conn,
+        "gravita",
+        "valore",
+        "gravita_id",
+        r_local$magnitude_id
+      )
     })
 
     output$risk_result <- renderText({
@@ -701,17 +784,8 @@ mod_insert01_server <- function(id, r_global){
       req(r_local$probability_id)
       req(r_local$magnitude_id)
 
-      {
-        sql_getmean(r_global$conn, "rilevabilita", r_local$detectability_id) *
-        sql_getmean(r_global$conn, "probabilita", r_local$probability_id) *
-        sql_getmean(r_global$conn, "gravita", r_local$magnitude_id)
-      } |>
-        round(0)
+      glue::glue("<span class='risk risk_{r_local$risk_color}'>{r_local$risk_value}</span>")
     })
-
-
-
-
 
   })
 }

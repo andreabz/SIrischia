@@ -52,6 +52,10 @@ sql_getcondlist <- function(conn,
 
   stopifnot(is.character(table))
   stopifnot(is.character(col))
+  stopifnot(length(colcond) == 1)
+  stopifnot(length(valcond) == 1)
+
+  selcols <- glue::glue_sql_collapse(col, sep = ", ")
 
   if(is.character(colcond)){
     mycols <- glue::glue_sql("{`colcond`}", .con = conn)
@@ -61,7 +65,7 @@ sql_getcondlist <- function(conn,
 
   }
 
-  query <- glue::glue_sql("SELECT {`col`}
+  query <- glue::glue_sql("SELECT {`selcols`}
                             FROM {`table`}
                            WHERE {mycols} = {valcond};",
                           .con = conn)
@@ -252,8 +256,6 @@ sql_update <- function(conn, tbl, cols, vals, condcol, condval){
                                SET {sql_cols}
                                WHERE {`condcol`} = {condval};")
 
-  print(sql_query)
-
   pool::dbExecute(conn, sql_query)
 }
 
@@ -391,7 +393,7 @@ sql_getmean <- function(conn,
   stopifnot(pool::dbExistsTable(conn, table))
 
   col_names <- pool::dbListFields(conn, table)
-  excluded_cols <- c(paste0(table, "_id"), "metodo_id", "anno_id")
+  excluded_cols <- c(paste0(table, "_id"), "metodo_id", "anno_id", "valore")
   included_cols <- col_names[!{col_names %in% excluded_cols}]
   table_names <- included_cols |> (\(x) {gsub("_id", "", x)})()
 
@@ -403,7 +405,7 @@ sql_getmean <- function(conn,
     uniontable <-  gsub("_id", "", x)
     table_id <- paste0(table, "_id")
 
-    union <- glue::glue_sql("SELECT valore
+    union <- glue::glue_sql("SELECT {`uniontable`}.valore
                      FROM {`uniontable`}
                      INNER JOIN {`table`}
                       ON {`uniontable`}.{`x`} = {`table`}.{`x`}
@@ -416,4 +418,92 @@ sql_getmean <- function(conn,
     unname() |>
     mean() |>
     round(2)
+}
+
+#' SQL query for getting a table of the risk for a selected laboratory area
+#'
+#' @description the function returns a data.table reporting the method name,
+#' the technique on which the method is based and the risk value.
+#'
+#' @param conn db connection parameters.
+#' @param area_id the name of the lab area.
+#'
+#' @return a data.table.
+#'
+#' @noRd
+#' @importFrom pool dbGetQuery db
+#' @importFrom glue glue_sql
+#' @import data.table
+sql_getrisktable <- function(conn,
+                        area){
+
+  stopifnot(is.character(area))
+  stopifnot(pool::dbExistsTable(conn, "settore"))
+  stopifnot(pool::dbExistsTable(conn, "metodo"))
+  stopifnot(pool::dbExistsTable(conn, "tecnica"))
+  stopifnot(pool::dbExistsTable(conn, "probabilita"))
+  stopifnot(pool::dbExistsTable(conn, "rischio"))
+
+  query_areaid <- glue::glue_sql(.con = conn,
+                                 "SELECT settore_id
+                                  FROM settore
+                                  WHERE valore = {area};")
+  area_id <- pool::dbGetQuery(conn, query_areaid)
+
+  query <- glue::glue_sql(.con = conn,
+                          "SELECT settore.valore AS settore,
+                                metodo.metodo,
+                                tecnica.valore AS tecnica,
+                                anno.valore AS anno,
+                                rischio.valore AS rischio,
+                                rischio.colore
+                          FROM metodo
+                          INNER JOIN settore
+                            ON metodo.settore_id = settore.settore_id
+                          INNER JOIN tecnica
+                            ON metodo.tecnica_id = tecnica.tecnica_id
+                          INNER JOIN probabilita
+                            ON metodo.metodo_id = probabilita.metodo_id
+                          INNER JOIN anno
+                            ON probabilita.anno_id = anno.anno_id
+                          INNER JOIN rischio
+                            ON probabilita.probabilita_id = rischio.probabilita_id
+                          WHERE settore.settore_id = {area_id};")
+
+  pool::dbGetQuery(conn, query)
+}
+
+#' SQL query for counting method in a risk level
+#'
+#' @description the function returns an integer with the number of records
+#' in the rischio table associated with a given risk level.
+#'
+#' @param conn db connection parameters.
+#' @param level level of risk.
+#' @param year the year id for record filtering.
+#'
+#' @return an integer
+#'
+#' @noRd
+#' @importFrom pool dbGetQuery db
+#' @importFrom glue glue_sql
+sql_countrisk <- function(conn,
+                          level,
+                          year_id){
+
+  stopifnot(is.character(level))
+  stopifnot(is.integer(year_id))
+  stopifnot(pool::dbExistsTable(conn, "probabilita"))
+  stopifnot(pool::dbExistsTable(conn, "rischio"))
+
+  query <- glue::glue_sql(.con = conn,
+                          "SELECT COUNT(*) AS n
+                            FROM rischio
+                           INNER JOIN probabilita
+                            ON rischio.probabilita_id = probabilita.probabilita_id
+                           WHERE colore = {level} AND probabilita.anno_id = {year_id};")
+
+  pool::dbGetQuery(conn, query) |>
+    unlist() |>
+    unname()
 }
