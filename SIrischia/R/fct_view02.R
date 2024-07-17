@@ -23,7 +23,7 @@ format_risk <- function(conn, area) {
   . <- NULL
 
   risk_dt <- sql_getrisktable(conn, area) |> data.table::data.table()
-  risk_dt[, formatted_risk := glue::glue("<span class='risk risk_{risk_dt$colore}'>{risk_dt$rischio}</span>")][,
+  risk_dt[, formatted_risk := glue::glue("<span class='risk {risk_dt$colore}'>{risk_dt$rischio}</span>")][,
     .(settore, metodo, tecnica, anno, formatted_risk)] |>
     data.table::dcast(settore + metodo + tecnica ~ anno, value.var = "formatted_risk")
 }
@@ -58,3 +58,29 @@ riskDT <- function(data) {
   ) |>
     DT::formatStyle(newcols, 'vertical-align' = 'middle')
 }
+
+#' Risk value boxes
+#'
+#' @description Text for the risk value boxes
+#' @param conn database connection settings.
+#' @param level a character, level of the risk.
+#' @param year integer id of the year
+#'
+#' @return a string
+#'
+#' @noRd
+#' @importFrom glue glue
+risk_txt <- function(conn,
+                     level,
+                     year_id){
+
+  stopifnot(is.character(level))
+  stopifnot(is.integer(year_id))
+
+  n <- sql_countrisk(conn, level, year_id)
+  n_text <- ifelse(n == 0, "nessun", n)
+  method_text <- ifelse(n > 1, "metodi", "metodo")
+  glue::glue("{n_text} {method_text}")
+}
+
+
