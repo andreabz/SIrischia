@@ -1,7 +1,7 @@
  :root {
    --verde: #34A853;
    --giallo: #FBBC05;
-   --rosso: #EA4335
+   --rosso: #EA4335;
  }
 
  .risk {
@@ -18,17 +18,17 @@
 }
 
 .risk.verde {
-  background-color: var(--verde); /* Green */
+  background-color: var(--bs-success); /* Green */
   color: white;
 }
 
 .risk.giallo {
   background-color: var(--giallo); /* Yellow */
-  color: black;
+  color: white;
 }
 
 .risk.rosso {
-  background-color: var(--rosso); /* Red */
+  background-color: var(--bs-danger); /* Red */
   color: white;
 }
 
@@ -37,17 +37,17 @@
 }
 
 .small-box.verde {
-  background-color: var(--verde); /* Green */
+  background-color: var(--bs-success); /* Green */
   color: white;
 }
 
 .small-box.giallo {
   background-color: var(--giallo); /* Yellow */
-  color: black;
+  color: white;
 }
 
 .small-box.rosso {
-  background-color: var(--rosso); /* Red */
+  background-color: var(--bs-danger); /* Red */
   color: white;
 }
 
