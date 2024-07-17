@@ -43,8 +43,9 @@ mod_view02_ui <- function(id) {
         p(textOutput(ns("alert_year"))),
         p("nell'intero laboratorio"),
         showcase = shiny::icon("face-frown"),
-        theme = bslib::value_box_theme(bg = "#C70039", fg = "white"),
-        class = "small-box",
+        #theme = bslib::value_box_theme(bg = "#C70039", fg = "white"),
+        class = "small-box rosso",
+        #style =  "risk_rosso",
         max_height = "150px"
       ),
       bslib::value_box(
@@ -54,8 +55,9 @@ mod_view02_ui <- function(id) {
         p(textOutput(ns("warning_year"))),
         p("nell'intero laboratorio"),
         showcase = shiny::icon("face-meh"),
-        theme = bslib::value_box_theme(bg = "#FFC300", fg = "black"),
-        class = "small-box",
+        #theme = bslib::value_box_theme(bg = "#FFC300", fg = "black"),
+        class = "small-box giallo",
+        #style = "risk_giallo",
         max_height = "150px"
       ),
       bslib::value_box(
@@ -65,8 +67,9 @@ mod_view02_ui <- function(id) {
         p(textOutput(ns("fine_year"))),
         p("nell'intero laboratorio"),
         showcase = shiny::icon("face-grin"),
-        theme = bslib::value_box_theme(bg = "#04AA6D", fg = "white"),
-        class = "small-box",
+        #theme = bslib::value_box_theme(bg = var(--verde), fg = "white"),
+        class = "small-box verde",
+        #style = "risk_verde",
         max_height = "150px"
       )
     ),
@@ -92,7 +95,10 @@ mod_view02_server <- function(id, r_global) {
       this_year_txt = NULL,
       area_id = NULL,
       area = NULL,
-      risk_data = data.table::data.table()
+      risk_data = data.table::data.table(),
+      risk_verde = NULL,
+      risk_giallo = NULL,
+      risk_rosso = NULL
     )
 
     observeEvent(r_global$conn, {
@@ -112,6 +118,13 @@ mod_view02_server <- function(id, r_global) {
       r_local$this_year_txt <- glue::glue("nell'anno {r_local$this_year}")
     })
 
+    observeEvent(r_global$tab, {
+      # refresh the counters at each tab switch
+      r_local$risk_verde = risk_txt(r_global$conn, "verde", r_local$this_year_id)
+      r_local$risk_giallo = risk_txt(r_global$conn, "giallo", r_local$this_year_id)
+      r_local$risk_rosso = risk_txt(r_global$conn, "rosso", r_local$this_year_id)
+    })
+
     observeEvent(input$filter, {
       r_local$area <- input$area
       r_local$area_id <- sql_getcondlist(r_global$conn,
@@ -129,24 +142,15 @@ mod_view02_server <- function(id, r_global) {
     })
 
     output$alert <- renderText({
-      n <- sql_countrisk(r_global$conn, "rosso", r_local$this_year_id)
-      n_text <- ifelse(n == 0, "nessun", n)
-      method_text <- ifelse(n > 1, "metodi", "metodo")
-      glue::glue("{n_text} {method_text}")
+      r_local$risk_rosso
     })
 
     output$warning <- renderText({
-      n <- sql_countrisk(r_global$conn, "giallo", r_local$this_year_id)
-      n_text <- ifelse(n == 0, "nessun", n)
-      method_text <- ifelse(n > 1, "metodi", "metodo")
-      glue::glue("{n_text} {method_text}")
+      r_local$risk_giallo
     })
 
     output$fine <- renderText({
-      n <- sql_countrisk(r_global$conn, "verde", r_local$this_year_id)
-      n_text <- ifelse(n == 0, "nessun", n)
-      method_text <- ifelse(n > 1, "metodi", "metodo")
-      glue::glue("{n_text} {method_text}")
+      r_local$risk_verde
     })
 
     output$alert_year <- output$warning_year <- output$fine_year <- renderText({

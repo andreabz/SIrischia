@@ -17,8 +17,17 @@ app_server <- function(input, output, session) {
   })
 
   r_global <- reactiveValues(
-    conn = conn           # db connection shared across modules
+    conn = conn,           # db connection shared across modules
+    tab = NULL             # tab switcher
   )
+
+  observeEvent(input$navbar, {
+    if(is.null(r_global$tab)) {
+      r_global$tab <- 1
+    } else {
+      r_global$tab <- isolate(r_global$tab) + 1
+    }
+  })
 
   mod_insert01_server("methods", r_global)
   mod_view02_server("risk", r_global)
