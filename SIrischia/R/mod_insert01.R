@@ -727,7 +727,7 @@ mod_insert01_server <- function(id, r_global) {
         ", in uso presso il settore {r_local$area}",
         " nell'anno {r_local$year}.</br>
 
-        Il rischio \u00E8 <span class='risk risk_{r_local$risk_color}'>{r_local$risk_value}</span>"
+        Il rischio \u00E8 <span class='risk {r_local$risk_color}'>{r_local$risk_value}</span>"
       )
 
       shinyjs::hide("risk")
@@ -788,7 +788,7 @@ mod_insert01_server <- function(id, r_global) {
       req(r_local$probability_id)
       req(r_local$magnitude_id)
 
-      glue::glue("<span class='risk risk_{r_local$risk_color}'>{r_local$risk_value}</span>")
+      glue::glue("<span class='risk {r_local$risk_color}'>{r_local$risk_value}</span>")
     })
 
   })

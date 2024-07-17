@@ -1,3 +1,9 @@
+ :root {
+   --verde: #34A853;
+   --giallo: #FBBC05;
+   --rosso: #EA4335
+ }
+
  .risk {
   min-width: 50px;
   border: none;
@@ -11,23 +17,38 @@
   border-radius: 8px;
 }
 
-.risk_verde {
-  background-color: #04AA6D; /* Green */
+.risk.verde {
+  background-color: var(--verde); /* Green */
   color: white;
 }
 
-.risk_giallo {
-  background-color: #FFC300; /* Yellow */
+.risk.giallo {
+  background-color: var(--giallo); /* Yellow */
   color: black;
 }
 
-.risk_rosso {
-  background-color: #C70039; /* Yellow */
+.risk.rosso {
+  background-color: var(--rosso); /* Red */
   color: white;
 }
 
-.small-box{
+.small-box {
   border-radius: 15px;
+}
+
+.small-box.verde {
+  background-color: var(--verde); /* Green */
+  color: white;
+}
+
+.small-box.giallo {
+  background-color: var(--giallo); /* Yellow */
+  color: black;
+}
+
+.small-box.rosso {
+  background-color: var(--rosso); /* Red */
+  color: white;
 }
 
 #DataTables_Table_0_wrapper {
