@@ -343,7 +343,6 @@ mod_insert01_server <- function(id, r_global) {
       updateSelectInput(session, inputId = "method", choices = methods_area)
     })
 
-
     #### update the technique list based on lab site and method ----
     observeEvent(input$method, {
       r_local$method <- input$method
@@ -527,7 +526,6 @@ mod_insert01_server <- function(id, r_global) {
         })
 
       }
-
     })
 
     #### restore saved questionnaire choices when they exist ----
@@ -732,7 +730,6 @@ mod_insert01_server <- function(id, r_global) {
 
       shinyjs::hide("risk")
       shinyjs::show("done")
-
     })
 
     #### title of the questionnaire card ----

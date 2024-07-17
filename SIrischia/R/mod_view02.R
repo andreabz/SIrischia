@@ -43,9 +43,7 @@ mod_view02_ui <- function(id) {
         p(textOutput(ns("alert_year"))),
         p("nell'intero laboratorio"),
         showcase = shiny::icon("face-frown"),
-        #theme = bslib::value_box_theme(bg = "#C70039", fg = "white"),
         class = "small-box rosso",
-        #style =  "risk_rosso",
         max_height = "150px"
       ),
       bslib::value_box(
@@ -55,9 +53,7 @@ mod_view02_ui <- function(id) {
         p(textOutput(ns("warning_year"))),
         p("nell'intero laboratorio"),
         showcase = shiny::icon("face-meh"),
-        #theme = bslib::value_box_theme(bg = "#FFC300", fg = "black"),
         class = "small-box giallo",
-        #style = "risk_giallo",
         max_height = "150px"
       ),
       bslib::value_box(
@@ -67,9 +63,7 @@ mod_view02_ui <- function(id) {
         p(textOutput(ns("fine_year"))),
         p("nell'intero laboratorio"),
         showcase = shiny::icon("face-grin"),
-        #theme = bslib::value_box_theme(bg = var(--verde), fg = "white"),
         class = "small-box verde",
-        #style = "risk_verde",
         max_height = "150px"
       )
     ),
@@ -126,6 +120,7 @@ mod_view02_server <- function(id, r_global) {
     })
 
     observeEvent(input$filter, {
+      # prepare the summary table
       r_local$area <- input$area
       r_local$area_id <- sql_getcondlist(r_global$conn,
                                          "settore",
@@ -136,24 +131,29 @@ mod_view02_server <- function(id, r_global) {
     })
 
     output$table <- DT::renderDT({
+      # show the table
       req(colnames(r_local$risk_data))
 
       riskDT(r_local$risk_data)
     })
 
     output$alert <- renderText({
+      # red value box
       r_local$risk_rosso
     })
 
     output$warning <- renderText({
+      # yellow value box
       r_local$risk_giallo
     })
 
     output$fine <- renderText({
+      # green value box
       r_local$risk_verde
     })
 
     output$alert_year <- output$warning_year <- output$fine_year <- renderText({
+      # current year in the three value boxes
       r_local$this_year_txt
     })
 
